@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PAIGH — Strategy Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream:   #F8F6F1;
+    --jet:     #484349;
+    --sunny:   #F6D06F;
+    --salmon:  #FF7866;
+    --apricot: #F4CBB2;
+    --lavender:#C7A8F0;
+    --spring:  #B1D3B1;
+    --beige:   #E7D6C4;
+    --white:   #FFFFFF;
+    --jet-80:  rgba(72,67,73,0.08);
+    --jet-20:  rgba(72,67,73,0.20);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+    --font-mono:    'DM Mono', monospace;
+    --r:  12px;
+    --r2: 20px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--jet);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    background: var(--jet);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-brand {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+  }
+  .topbar-brand span { color: var(--sunny); }
+  .topbar-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--apricot);
+    text-align: right;
+    line-height: 1.4;
+  }
+  .topbar-nav {
+    display: flex;
+    gap: 6px;
+  }
+  .nav-pill {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid rgba(248,246,241,0.2);
+    color: rgba(248,246,241,0.6);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-decoration: none;
+  }
+  .nav-pill:hover, .nav-pill.active {
+    background: var(--sunny);
+    border-color: var(--sunny);
+    color: var(--jet);
+  }
+
+  /* ── PAGE SHELL ── */
+  .page { max-width: 1320px; margin: 0 auto; padding: 0 32px 80px; }
+
+  /* ── SECTION HEADERS ── */
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--salmon);
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.12;
+    color: var(--jet);
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    font-size: 14px;
+    color: rgba(72,67,73,0.55);
+    max-width: 560px;
+    margin-bottom: 36px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 0;
+    border-bottom: 1px solid var(--jet-20);
+    margin-bottom: 64px;
+    padding: 56px 0 52px;
+  }
+  .hero-left {}
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--salmon);
+    margin-bottom: 18px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 28px; height: 2px;
+    background: var(--salmon);
+  }
+  .hero-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 5vw, 68px);
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--jet);
+    margin-bottom: 20px;
+  }
+  .hero-h1 em { font-style: italic; color: var(--salmon); }
+  .hero-desc {
+    font-size: 15px;
+    color: rgba(72,67,73,0.6);
+    max-width: 520px;
+    line-height: 1.7;
+  }
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-left: 40px;
+    border-left: 1px solid var(--jet-20);
+    justify-content: center;
+  }
+  .kpi-card {
+    background: var(--white);
+    border-radius: var(--r);
+    padding: 16px 20px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border: 1px solid var(--jet-80);
+  }
+  .kpi-label { font-size: 11px; font-weight: 500; color: rgba(72,67,73,0.5); letter-spacing: 0.04em; }
+  .kpi-value { font-family: var(--font-display); font-size: 24px; color: var(--jet); }
+  .kpi-delta { font-size: 11px; font-weight: 600; }
+  .kpi-delta.up { color: #4caf7d; }
+  .kpi-delta.down { color: var(--salmon); }
+
+  /* ── TIMELINE ── */
+  .section { margin-bottom: 72px; }
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--sunny), var(--apricot), var(--lavender));
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 32px;
+    padding-left: 24px;
+  }
+  .tl-dot {
+    position: absolute;
+    left: -25px;
+    top: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--sunny);
+    border: 2px solid var(--jet);
+  }
+  .tl-date {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(72,67,73,0.45);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .tl-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .tl-body { font-size: 13.5px; color: rgba(72,67,73,0.7); line-height: 1.65; max-width: 640px; }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 999px;
+    margin-right: 5px;
+    margin-top: 8px;
+  }
+  .tag-brand  { background: var(--apricot); color: var(--jet); }
+  .tag-content{ background: var(--lavender); color: var(--jet); }
+  .tag-data   { background: var(--spring); color: var(--jet); }
+  .tag-tech   { background: var(--sunny); color: var(--jet); }
+  .tag-yt     { background: var(--salmon); color: #fff; }
+
+  /* ── METRICS GRID ── */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .platform-card {
+    background: var(--white);
+    border-radius: var(--r2);
+    padding: 24px 20px;
+    border: 1px solid var(--jet-80);
+    position: relative;
+    overflow: hidden;
+  }
+  .platform-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .p-ig::before  { background: linear-gradient(90deg, #f77737, #c13584); }
+  .p-fb::before  { background: #1877f2; }
+  .p-tt::before  { background: #010101; }
+  .p-pt::before  { background: #e60023; }
+
+  .platform-name { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; color: rgba(72,67,73,0.5); }
+  .platform-followers { font-family: var(--font-display); font-size: 28px; margin-bottom: 2px; }
+  .platform-sub { font-size: 12px; color: rgba(72,67,73,0.45); margin-bottom: 14px; }
+  .platform-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ps-item { font-size: 12px; }
+  .ps-item strong { display: block; font-size: 15px; font-weight: 600; }
+
+  /* ── PERFORMANCE TABLE ── */
+  .perf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .perf-block { background: var(--white); border-radius: var(--r2); padding: 28px; border: 1px solid var(--jet-80); }
+  .perf-block-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot-works { width: 8px; height: 8px; border-radius: 50%; background: #4caf7d; display: inline-block; }
+  .dot-fails  { width: 8px; height: 8px; border-radius: 50%; background: var(--salmon); display: inline-block; }
+
+  .perf-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--jet-80);
+    gap: 12px;
+  }
+  .perf-row:last-child { border-bottom: none; }
+  .perf-theme { font-size: 13.5px; flex: 1; }
+  .perf-theme small { display: block; font-size: 11px; color: rgba(72,67,73,0.5); margin-top: 1px; }
+  .perf-eng {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    min-width: 44px;
+    text-align: right;
+  }
+  .eng-high { color: #4caf7d; }
+  .eng-med  { color: #f5a623; }
+  .eng-low  { color: var(--salmon); }
+
+  .eng-bar-wrap { width: 80px; background: var(--jet-80); border-radius: 4px; height: 6px; align-self: center; overflow: hidden; flex-shrink: 0; }
+  .eng-bar { height: 100%; border-radius: 4px; }
+  .bar-high { background: #4caf7d; }
+  .bar-med  { background: #f5a623; }
+  .bar-low  { background: var(--salmon); }
+
+  /* ── PERSONAS ── */
+  .personas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .persona-card {
+    background: var(--white);
+    border-radius: var(--r2);
+    padding: 28px;
+    border: 1px solid var(--jet-80);
+    position: relative;
+    overflow: hidden;
+  }
+  .persona-accent {
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 0 var(--r2) 0 100%;
+    opacity: 0.3;
+  }
+  .persona-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: rgba(72,67,73,0.4);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .persona-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .persona-quote {
+    font-size: 13px;
+    font-style: italic;
+    color: rgba(72,67,73,0.6);
+    margin-bottom: 14px;
+    padding-left: 12px;
+    border-left: 2px solid var(--sunny);
+    line-height: 1.55;
+  }
+  .persona-age { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--salmon); }
+  .persona-row { font-size: 13px; margin-bottom: 5px; }
+  .persona-row strong { color: var(--jet); font-weight: 600; }
+  .persona-tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 5px; }
+
+  /* ── CONTENT IDEA CARDS ── */
+  .ideas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .idea-card {
+    background: var(--white);
+    border-radius: var(--r2);
+    padding: 24px;
+    border: 1px solid var(--jet-80);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .idea-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(72,67,73,0.10); }
+  .idea-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .idea-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(72,67,73,0.45);
+  }
+  .badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .badge-live  { background: #e8f7ef; color: #2e7d52; }
+  .badge-planned { background: #fff4df; color: #9a6500; }
+  .badge-test  { background: #f3eeff; color: #6b44b0; }
+  .badge-scale { background: #ffeae7; color: #c0381f; }
+
+  .idea-title { font-family: var(--font-display); font-size: 17px; line-height: 1.25; }
+  .idea-hook {
+    font-size: 12px;
+    color: rgba(72,67,73,0.55);
+    font-style: italic;
+    border-left: 2px solid var(--apricot);
+    padding-left: 10px;
+    line-height: 1.5;
+  }
+  .idea-fit {
+    font-size: 12.5px;
+    color: rgba(72,67,73,0.7);
+    line-height: 1.55;
+  }
+  .idea-footer {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--jet-80);
+  }
+
+  /* ── GHIBLI / URLAUB HERO CARDS ── */
+  .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 36px; }
+  .concept-card {
+    border-radius: var(--r2);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-ghibli { background: linear-gradient(135deg, #e8f4e8 0%, #d4eadc 60%, #c7e3f4 100%); }
+  .concept-urlaub { background: linear-gradient(135deg, #fdf0e0 0%, #fde8d0 60%, #fad4b8 100%); }
+  .concept-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+  .concept-title {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.1;
+  }
+  .concept-pitch {
+    font-size: 14px;
+    opacity: 0.75;
+    margin-bottom: 20px;
+    max-width: 360px;
+    line-height: 1.6;
+  }
+  .fit-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .fit-list li {
+    font-size: 13.5px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+  .fit-check {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--jet);
+    color: var(--cream);
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+    font-weight: 700;
+  }
+  .concept-personas { margin-top: 20px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ── FORMULA BAR ── */
+  .formula-bar {
+    background: var(--jet);
+    border-radius: var(--r2);
+    padding: 28px 36px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    margin-bottom: 64px;
+    align-items: center;
+  }
+  .formula-step {
+    text-align: center;
+    position: relative;
+    padding: 0 8px;
+  }
+  .formula-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--sunny);
+    font-size: 16px;
+  }
+  .formula-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(248,246,241,0.35);
+    margin-bottom: 6px;
+  }
+  .formula-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cream);
+    line-height: 1.3;
+  }
+  .formula-accent { color: var(--sunny); }
+
+  /* ── PRIORITIES ── */
+  .priorities-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .priority-card {
+    background: var(--white);
+    border-radius: var(--r);
+    padding: 22px;
+    border: 1px solid var(--jet-80);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .priority-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--apricot);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 32px;
+  }
+  .priority-body {}
+  .priority-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .priority-sub { font-size: 12.5px; color: rgba(72,67,73,0.6); line-height: 1.55; }
+
+  /* ── DIVIDER ── */
+  .wave-div {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--sunny) 30%, var(--apricot) 70%, transparent);
+    margin: 48px 0;
+    opacity: 0.5;
+  }
+
+  /* ── SCROLLING ── */
+  html { scroll-behavior: smooth; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--beige); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .platform-grid { grid-template-columns: repeat(2, 1fr); }
+    .ideas-grid { grid-template-columns: repeat(2, 1fr); }
+    .concept-grid { grid-template-columns: 1fr; }
+    .formula-bar { grid-template-columns: repeat(3, 1fr); }
+    .formula-step:nth-child(3)::after { display: none; }
+  }
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 20px; }
+    .topbar-nav { display: none; }
+    .page { padding: 0 20px 60px; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { border-left: none; border-top: 1px solid var(--jet-20); padding-left: 0; padding-top: 24px; margin-top: 24px; }
+    .perf-grid { grid-template-columns: 1fr; }
+    .personas-grid { grid-template-columns: 1fr; }
+    .ideas-grid { grid-template-columns: 1fr; }
+    .priorities-grid { grid-template-columns: 1fr; }
+    .formula-bar { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-brand">PAIGH <span>·</span> Strategy Dashboard</div>
+  <div class="topbar-nav">
+    <a class="nav-pill active" href="#agenda">Agenda</a>
+    <a class="nav-pill" href="#metrics">Metrics</a>
+    <a class="nav-pill" href="#performance">Performance</a>
+    <a class="nav-pill" href="#personas">Personas</a>
+    <a class="nav-pill" href="#future-content">Future Content</a>
+    <a class="nav-pill" href="#priorities">Priorities</a>
+  </div>
+  <div class="topbar-meta">
+    Jan 2026 – Jun 2026<br/>
+    House of Sustainable Brands GmbH
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Strategy Overview — Season 1</div>
+      <h1 class="hero-h1">From zero to<br/><em>content engine.</em></h1>
+      <p class="hero-desc">Everything built since the first PAIGH brief — brand identity, audience intelligence, Metricool insights, reel scripts, AI character workflow, and what comes next: Ghibli and Urlaub.</p>
+    </div>
+    <div class="hero-right">
+      <div class="kpi-card">
+        <div><div class="kpi-label">Total Followers</div><div class="kpi-value">53.5K</div></div>
+        <div><div class="kpi-label">Platforms</div><div class="kpi-value" style="font-size:18px">FB · IG · PT · TT</div></div>
+      </div>
+      <div class="kpi-card">
+        <div><div class="kpi-label">Impressions (Jan–Jun)</div><div class="kpi-value">13.2M</div></div>
+        <div><span class="kpi-delta up">+11.55%</span></div>
+      </div>
+      <div class="kpi-card">
+        <div><div class="kpi-label">Interactions</div><div class="kpi-value">3,302</div></div>
+        <div><span class="kpi-delta down">−34.14%</span></div>
+      </div>
+      <div class="kpi-card">
+        <div><div class="kpi-label">Avg. Engagement Rate</div><div class="kpi-value">~0.025%</div></div>
+        <div><span style="font-size:11px;color:var(--salmon);font-weight:600;">Resonance gap</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WINNING FORMULA -->
+  <div class="formula-bar">
+    <div class="formula-step">
+      <div class="formula-num">01</div>
+      <div class="formula-label formula-accent">Pain Point</div>
+    </div>
+    <div class="formula-step">
+      <div class="formula-num">02</div>
+      <div class="formula-label">Emotion</div>
+    </div>
+    <div class="formula-step">
+      <div class="formula-num">03</div>
+      <div class="formula-label">Everyday Scene</div>
+    </div>
+    <div class="formula-step">
+      <div class="formula-num">04</div>
+      <div class="formula-label formula-accent">Product</div>
+    </div>
+    <div class="formula-step">
+      <div class="formula-num">05</div>
+      <div class="formula-label">Soft Value</div>
+    </div>
+    <div class="formula-step">
+      <div class="formula-num">06</div>
+      <div class="formula-label formula-accent">Calm Ending</div>
+    </div>
+  </div>
+
+  <!-- AGENDA / TIMELINE -->
+  <section class="section" id="agenda">
+    <div class="section-label">Agenda</div>
+    <h2 class="section-title">What we built, step by step.</h2>
+    <p class="section-sub">Every milestone from the first brief to where PAIGH stands today — six months of strategy, content, and infrastructure.</p>
+
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--sunny)"></div>
+        <div class="tl-date">Early 2026 — Foundation</div>
+        <div class="tl-title">Brand Identity System</div>
+        <div class="tl-body">Built the full PAIGH brand identity: color palette (Cream, Jet, Sunny + secondaries), font pairing (Quincy CF display + Brandon Grotesque body), visual system "Verspielte Rahmen" — arched/circle cutouts on solid color blocks with hand-drawn wave elements. Documented all hard rules (no AI visuals, no berry/magenta/neon).</div>
+        <div>
+          <span class="tag tag-brand">Brand Identity</span>
+          <span class="tag tag-brand">Color System</span>
+          <span class="tag tag-brand">Typography</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--apricot)"></div>
+        <div class="tl-date">Feb 2026 — Audience</div>
+        <div class="tl-title">Four Buyer Personas Developed</div>
+        <div class="tl-body">Defined Clara (Conscious Boho), Mara (Comfort-First), Sofia (Expressive Inclusive), and Lena (Story-Led). Each persona was mapped to content formats, hooks, objections, and channel preferences. Mara became the photorealistic AI character anchor for video content.</div>
+        <div>
+          <span class="tag tag-brand">Personas</span>
+          <span class="tag tag-content">Audience Research</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--lavender)"></div>
+        <div class="tl-date">Feb–Mar 2026 — Content Strategy</div>
+        <div class="tl-title">Content Playbook + 10 Repeatable Series</div>
+        <div class="tl-body">Built the full content engine: 6 content pillars, 10 repeatable series (Meet the Maker, Comfort Test, One Piece Many Ways, Print Quiz, Fits Real Bodies, Real Cost of Fair, POV/Clothes Could Talk, Anti-Haul, Behind the Print, PAIGH Family UGC), posting cadence of 5 posts/week at 7–9PM CET.</div>
+        <div>
+          <span class="tag tag-content">Playbook</span>
+          <span class="tag tag-content">Series</span>
+          <span class="tag tag-content">Cadence</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--spring)"></div>
+        <div class="tl-date">Mar 2026 — Data</div>
+        <div class="tl-title">Metricool Audit & Performance Insights</div>
+        <div class="tl-body">Analysed Jan–Jun Metricool report. Key finding: reach is not the problem (13.2M impressions), resonance is (3.3K interactions, 0.025%). Feeling-first content (eng 3–4) consistently beats product-first (eng 0.6–1.8). Developed the "Reframe Keywords" strategy: "Nachhaltige Mode" → "Nachhaltige Mode, die sich leicht anfühlt."</div>
+        <div>
+          <span class="tag tag-data">Metricool</span>
+          <span class="tag tag-data">Performance</span>
+          <span class="tag tag-data">Keywords</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--salmon)"></div>
+        <div class="tl-date">Apr 2026 — Production</div>
+        <div class="tl-title">Reel Scripts + Trial Reel Sprint</div>
+        <div class="tl-body">Wrote 4 ready-to-produce reel scripts (POV "Deine Kleidung könnte sprechen", A Day Without Mirrors, Print Quiz, Anti-Haul Haul) plus 8-reel Trial Sprint with precise hooks, scene directions, and soft endings — all in German. Best reel so far: "Endlich ist die Sonne wieder da" (Apr 13, eng 3.36).</div>
+        <div>
+          <span class="tag tag-content">Reel Scripts</span>
+          <span class="tag tag-content">German Copy</span>
+          <span class="tag tag-content">Sprint Plan</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--lavender)"></div>
+        <div class="tl-date">Apr–May 2026 — AI Workflow</div>
+        <div class="tl-title">Mara Character + AI Production Pipeline</div>
+        <div class="tl-body">Built the full AI content pipeline: ChatGPT for illustrated content, Higgsfield/Kling for photorealistic Mara reels (Soul ID setup), ElevenLabs for voiceover, CapCut for edit assembly. Documented PAIGH's AI character Mara as the photorealistic anchor for comfort-led video content. Set hard rule: AI output must look real, never AI-generated.</div>
+        <div>
+          <span class="tag tag-tech">AI Pipeline</span>
+          <span class="tag tag-tech">Mara Character</span>
+          <span class="tag tag-tech">Higgsfield/Kling</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--salmon)"></div>
+        <div class="tl-date">May 2026 — Distribution</div>
+        <div class="tl-title">Facebook & SEO Audit + Pinterest Strategy</div>
+        <div class="tl-body">Audited Facebook keyword and SEO approach. Built the Pinterest repurpose strategy: every Instagram reel cover and carousel → pinned. Identified strong vs weak hashtag clusters. Began mapping n8n automation touchpoints across the full content workflow.</div>
+        <div>
+          <span class="tag tag-data">Facebook</span>
+          <span class="tag tag-data">SEO</span>
+          <span class="tag tag-tech">n8n</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--sunny)"></div>
+        <div class="tl-date">Jun 2026 — Expansion</div>
+        <div class="tl-title">YouTube Shorts Strategy Added</div>
+        <div class="tl-body">Expanded PAIGH's content strategy to include YouTube Shorts — repurposing top reels from Instagram/TikTok with SEO-optimised titles. Ghibli and Urlaub concepts developed as seasonal campaign pillars (detailed below).</div>
+        <div>
+          <span class="tag tag-yt">YouTube Shorts</span>
+          <span class="tag tag-content">Ghibli Series</span>
+          <span class="tag tag-content">Urlaub Series</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="wave-div" />
+
+  <!-- METRICS -->
+  <section class="section" id="metrics">
+    <div class="section-label">Metricool Data — Jan–Jun 2026</div>
+    <h2 class="section-title">Platform snapshot.</h2>
+    <p class="section-sub">53.5K total followers across four platforms. Instagram is the engagement core; Facebook the reach engine. TikTok and Pinterest are untapped.</p>
+
+    <div class="platform-grid">
+      <div class="platform-card p-ig">
+        <div class="platform-name">Instagram</div>
+        <div class="platform-followers">17.57K</div>
+        <div class="platform-sub">Followers · 37 posts</div>
+        <div class="platform-stats">
+          <div class="ps-item"><strong>5.76M</strong>Impressions</div>
+          <div class="ps-item"><strong>2,481</strong>Interactions</div>
+          <div class="ps-item"><strong>69%</strong>Female</div>
+          <div class="ps-item"><strong>35–44</strong>Peak age</div>
+        </div>
+      </div>
+      <div class="platform-card p-fb">
+        <div class="platform-name">Facebook</div>
+        <div class="platform-followers">35.54K</div>
+        <div class="platform-sub">Followers · 21 posts</div>
+        <div class="platform-stats">
+          <div class="ps-item"><strong>7.45M</strong>Impressions</div>
+          <div class="ps-item"><strong>177</strong>Interactions</div>
+          <div class="ps-item"><strong>DE 71.6%</strong>Market</div>
+          <div class="ps-item"><strong>AT 8.9%</strong>Secondary</div>
+        </div>
+      </div>
+      <div class="platform-card p-tt">
+        <div class="platform-name">TikTok</div>
+        <div class="platform-followers">220</div>
+        <div class="platform-sub">Followers · 5 posts</div>
+        <div class="platform-stats">
+          <div class="ps-item"><strong>1,299</strong>Impressions</div>
+          <div class="ps-item"><strong>7</strong>Interactions</div>
+          <div class="ps-item"><strong>Untapped</strong>Potential</div>
+          <div class="ps-item"><strong>3</strong>Pilot reels needed</div>
+        </div>
+      </div>
+      <div class="platform-card p-pt">
+        <div class="platform-name">Pinterest</div>
+        <div class="platform-followers">210</div>
+        <div class="platform-sub">Followers · 1 post</div>
+        <div class="platform-stats">
+          <div class="ps-item"><strong>16.97K</strong>Impressions</div>
+          <div class="ps-item"><strong>637</strong>Interactions</div>
+          <div class="ps-item"><strong>High ROI</strong>Per post</div>
+          <div class="ps-item"><strong>0 effort</strong>Repurpose</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--white);border-radius:var(--r2);padding:24px 28px;border:1px solid var(--jet-80);display:flex;align-items:center;gap:24px;">
+      <div style="font-family:var(--font-display);font-size:48px;color:var(--apricot);flex-shrink:0;line-height:1">!</div>
+      <div>
+        <div style="font-weight:600;margin-bottom:4px;">The core tension: Reach is fine. Resonance is broken.</div>
+        <div style="font-size:13.5px;color:rgba(72,67,73,0.65);max-width:680px;line-height:1.6">13.22M impressions produced only 3,302 interactions — a 0.025% engagement rate. The audience is seeing PAIGH content; they're just not feeling it. The fix isn't more posts, it's feeling-first content that earns saves, shares, and comments.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="wave-div" />
+
+  <!-- PERFORMANCE: WHAT WORKS / WHAT FAILS -->
+  <section class="section" id="performance">
+    <div class="section-label">Content Analysis — Cleaned Metricool Data</div>
+    <h2 class="section-title">What resonates. What doesn't.</h2>
+    <p class="section-sub">Engagement rate scale: 3–4 = wins · 1.5–2.5 = mediocre · 0.6–1.5 = failures. The pattern is consistent and clear.</p>
+
+    <div class="perf-grid">
+      <div class="perf-block">
+        <div class="perf-block-title"><span class="dot-works"></span>What Works — eng 2–4+</div>
+        <div class="perf-row">
+          <div class="perf-theme">Seasonal feeling<small>"So langsam kommt die Sonne wieder raus"</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-high" style="width:100%"></div></div>
+          <div class="perf-eng eng-high">4.22</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Comfort + hero product<small>"Gemütlich durch den Tag – Haremshosen"</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-high" style="width:96%"></div></div>
+          <div class="perf-eng eng-high">4.04</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Sensory soft fabrics<small>"Stoffe, die dich umarmen"</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-high" style="width:92%"></div></div>
+          <div class="perf-eng eng-high">3.89</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Best reel to date<small>"Endlich ist die Sonne wieder da" (Apr 13)</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-high" style="width:80%"></div></div>
+          <div class="perf-eng eng-high">3.36</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Yoga / movement<small>"Inhale. Exhale."</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-high" style="width:82%"></div></div>
+          <div class="perf-eng eng-high">3.43</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Maker / fairness (human-led)<small>Weltfrauenmonat, "Every stitch"</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-med" style="width:55%"></div></div>
+          <div class="perf-eng eng-med">2.15–2.73</div>
+        </div>
+      </div>
+
+      <div class="perf-block">
+        <div class="perf-block-title"><span class="dot-fails"></span>What Fails — eng 0.6–1.8</div>
+        <div class="perf-row">
+          <div class="perf-theme">Product-first reel<small>"leichteste & stylischste Hosen" — leads with product, not person</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-low" style="width:42%"></div></div>
+          <div class="perf-eng eng-low">1.78</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Sustainability lecture<small>"Nachhaltigkeit bedeutet nicht…" — high reach, zero resonance</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-low" style="width:18%"></div></div>
+          <div class="perf-eng eng-low">0.74</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Argument-first ethics<small>"Fast Fashion will, dass du 30 Kleider…" — lectures the viewer</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-low" style="width:14%"></div></div>
+          <div class="perf-eng eng-low">0.60</div>
+        </div>
+        <div class="perf-row">
+          <div class="perf-theme">Feature list post<small>"Bequem. Farbenfroh. Fair produziert." — no emotion, just attributes</small></div>
+          <div class="eng-bar-wrap"><div class="eng-bar bar-low" style="width:16%"></div></div>
+          <div class="perf-eng eng-low">0.68</div>
+        </div>
+        <div class="perf-row" style="border:none">
+          <div style="background:rgba(255,120,102,0.08);border-radius:10px;padding:12px 14px;width:100%">
+            <div style="font-size:12px;font-weight:600;margin-bottom:4px;color:var(--salmon)">Root cause diagnosis</div>
+            <div style="font-size:12.5px;color:rgba(72,67,73,0.7);line-height:1.55">All failures lead with the brand's argument rather than the viewer's feeling. The audience doesn't engage with "here's why to care" — they engage with "here's exactly how this feels." Every failing post forgot to put the person before the product.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="wave-div" />
+
+  <!-- PERSONAS -->
+  <section class="section" id="personas">
+    <div class="section-label">Audience Intelligence</div>
+    <h2 class="section-title">The four people we're talking to.</h2>
+    <p class="section-sub">Every content decision traces back to one of these four personas. Match the hook to the person it serves before scripting.</p>
+
+    <div class="personas-grid">
+      <div class="persona-card">
+        <div class="persona-accent" style="background:var(--apricot)"></div>
+        <div class="persona-num">Persona 01 — Primary</div>
+        <div class="persona-name">Conscious Boho Clara</div>
+        <div class="persona-quote">"I'd rather own a few beautiful pieces made by people who were treated fairly than a closet full of things I feel guilty about."</div>
+        <div class="persona-age">Age 28–42 · Creative, Educator, NGO, Freelancer</div>
+        <div class="persona-row"><strong>Wants:</strong> Comfortable pieces that align with values — not beige or boring.</div>
+        <div class="persona-row"><strong>Pull factor:</strong> The maker story makes it personal and real.</div>
+        <div class="persona-row"><strong>Objection:</strong> "Is it worth the price?" → reframe via maker story.</div>
+        <div class="persona-tags">
+          <span class="tag tag-content">Maker Reels</span>
+          <span class="tag tag-content">One Piece Many Ways</span>
+          <span class="tag tag-brand">Story-led</span>
+        </div>
+      </div>
+
+      <div class="persona-card">
+        <div class="persona-accent" style="background:var(--sunny)"></div>
+        <div class="persona-num">Persona 02 — AI Character Anchor</div>
+        <div class="persona-name">Comfort-First Mara</div>
+        <div class="persona-quote">"If it isn't comfortable, I won't wear it twice — no matter how nice it looks."</div>
+        <div class="persona-age">Age 30–50 · Working mum, Teacher, Nurse, Remote Worker</div>
+        <div class="persona-row"><strong>Wants:</strong> All-day breathable comfort for real, busy life.</div>
+        <div class="persona-row"><strong>Pull factor:</strong> Comfort + movement promise, effortless silhouettes.</div>
+        <div class="persona-row"><strong>Objection:</strong> "Is it actually comfortable?" → show fabric and movement proof.</div>
+        <div class="persona-tags">
+          <span class="tag tag-tech">Mara AI Character</span>
+          <span class="tag tag-content">Comfort Test Reels</span>
+          <span class="tag tag-content">Pack with Me</span>
+        </div>
+      </div>
+
+      <div class="persona-card">
+        <div class="persona-accent" style="background:var(--lavender)"></div>
+        <div class="persona-num">Persona 03</div>
+        <div class="persona-name">Expressive Inclusive Sofia</div>
+        <div class="persona-quote">"I want clothes that feel like me — bright, a little different — and a brand that shows real bodies like mine."</div>
+        <div class="persona-age">Age 24–35 · Young Professional, Creative, Marketing, Hospitality</div>
+        <div class="persona-row"><strong>Wants:</strong> Colorful pieces; to see her body type represented authentically.</div>
+        <div class="persona-row"><strong>Pull factor:</strong> "Colorful inside & out" palette; inclusivity as normal.</div>
+        <div class="persona-row"><strong>Objection:</strong> "Will it suit my body?" → show diverse real models.</div>
+        <div class="persona-tags">
+          <span class="tag tag-content">Print Quizzes</span>
+          <span class="tag tag-content">Diverse Bodies Carousels</span>
+          <span class="tag tag-content">UGC</span>
+        </div>
+      </div>
+
+      <div class="persona-card">
+        <div class="persona-accent" style="background:var(--spring)"></div>
+        <div class="persona-num">Persona 04</div>
+        <div class="persona-name">Story-Led Lena</div>
+        <div class="persona-quote">"Tell me who made it and how — that's what makes me want to wear it."</div>
+        <div class="persona-age">Age 28–45 · Sustainability, Education, Social Impact roles</div>
+        <div class="persona-row"><strong>Wants:</strong> Genuine transparency; proof that "fair" is real; to advocate.</div>
+        <div class="persona-row"><strong>Pull factor:</strong> The maker story is her #1 driver.</div>
+        <div class="persona-row"><strong>Objection:</strong> "Is the sustainability real?" → show the people and production.</div>
+        <div class="persona-tags">
+          <span class="tag tag-content">Meet the Maker</span>
+          <span class="tag tag-content">Workshop Tours</span>
+          <span class="tag tag-data">Real Cost of Fair</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="wave-div" />
+
+  <!-- FUTURE CONTENT: GHIBLI + URLAUB -->
+  <section class="section" id="future-content">
+    <div class="section-label">Upcoming Content — Why They Fit</div>
+    <h2 class="section-title">Ghibli & Urlaub: the brief.</h2>
+    <p class="section-sub">Two concepts already in development. Here's the strategic case for each — anchored in performance data, brand fit, and persona match.</p>
+
+    <div class="concept-grid">
+
+      <!-- GHIBLI -->
+      <div class="concept-card concept-ghibli">
+        <div class="concept-eyebrow">Series 01 — Illustrated / AI-Assisted</div>
+        <div class="concept-title">Ghibli-World PAIGH</div>
+        <div class="concept-pitch">A soft, illustrated aesthetic — Ghibli's warm countryside light, gentle movement, and human-scale world — applied to PAIGH's garments and the slow-fashion life. The characters wear PAIGH; the world feels handmade.</div>
+        <ul class="fit-list">
+          <li><span class="fit-check">✓</span>Ghibli's visual language — golden warmth, natural textures, flowing fabric — is a direct match for PAIGH's existing palette and "Verspielte Rahmen" system.</li>
+          <li><span class="fit-check">✓</span>Seasonal feeling content (eng 4.22) is the top performer. Ghibli reels are seasonal feeling expressed as world-building — same emotional trigger, richer visual.</li>
+          <li><span class="fit-check">✓</span>Clothing shown on characters in motion, not on hangers. Solves the "product-first" failure mode — the character and world come first, the garment is incidental.</li>
+          <li><span class="fit-check">✓</span>Highly shareable — Ghibli aesthetics have near-universal recognition and cross-cultural appeal across DACH markets.</li>
+          <li><span class="fit-check">✓</span>Works as still illustration → reel animation → Pinterest static. Three platforms, one asset.</li>
+        </ul>
+        <div class="concept-personas">
+          <span class="tag tag-brand">Clara — Dreamy boho world</span>
+          <span class="tag tag-content">Sofia — Colorful & expressive</span>
+          <span class="tag tag-content">Lena — Handmade, fair-world symbolism</span>
+        </div>
+      </div>
+
+      <!-- URLAUB -->
+      <div class="concept-card concept-urlaub">
+        <div class="concept-eyebrow">Series 02 — Real-life / Mara-led</div>
+        <div class="concept-title">Urlaub mit PAIGH</div>
+        <div class="concept-pitch">Travel content built around Mara — the photorealistic AI character. One PAIGH piece, multiple destinations. "Sofa. Fahrrad. Strand. Eine Hose." The format captures PAIGH's everyday-versatility promise in its most appealing setting: summer freedom.</div>
+        <ul class="fit-list">
+          <li><span class="fit-check">✓</span>Directly executes the highest-potential untested idea from the Metricool Sprint: "Sofa. Fahrrad. Strand. Eine Hose." — built for reach + saves.</li>
+          <li><span class="fit-check">✓</span>Travel triggers the emotional "Fernweh" feeling — a proven entry point for German-language audiences in summer (Jun–Aug peak).</li>
+          <li><span class="fit-check">✓</span>Mara's character is purpose-built for comfort-test and movement content. Urlaub is the natural extension: one piece, many real-life situations.</li>
+          <li><span class="fit-check">✓</span>The "Pack with me" and "1 piece, many occasions" formats sit inside the top save-driving series in the playbook. Urlaub fuses both.</li>
+          <li><span class="fit-check">✓</span>Comfort + mobility message reaches Mara persona directly — busy woman, real life, real trips. No aspirational gap to bridge.</li>
+        </ul>
+        <div class="concept-personas">
+          <span class="tag tag-brand">Mara — Comfort & mobility</span>
+          <span class="tag tag-content">Clara — Intentional travel packing</span>
+          <span class="tag tag-content">Sofia — Summer expression</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILED CONTENT CARDS -->
+    <div class="section-label" style="margin-top:40px">Content Pipeline — All Active Ideas</div>
+    <h3 style="font-family:var(--font-display);font-size:24px;margin-bottom:8px">What's in production and what to test next.</h3>
+    <p style="font-size:14px;color:rgba(72,67,73,0.55);margin-bottom:28px">Status: <strong>Live</strong> = proven · <strong>Planned</strong> = scripted, not yet produced · <strong>Test</strong> = new concept · <strong>Scale</strong> = top performer, repeat</p>
+
+    <div class="ideas-grid">
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Reel — Seasonal</span>
+          <span class="badge badge-scale">Scale</span>
+        </div>
+        <div class="idea-title">Seasonal Feeling Reel</div>
+        <div class="idea-hook">"So langsam kommt die Sonne wieder raus…"</div>
+        <div class="idea-fit">Top performer at 4.22 eng. Repeat this template every season change. Summer → Herbst → Winter each earn their own version. The emotional trigger is reliable.</div>
+        <div class="idea-footer">
+          <span class="tag tag-content">Clara</span><span class="tag tag-content">Mara</span>
+          <span class="tag tag-data">Eng 4.22</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Reel — Comfort</span>
+          <span class="badge badge-scale">Scale</span>
+        </div>
+        <div class="idea-title">Comfort + Hero Product</div>
+        <div class="idea-hook">"Gemütlich durch den Tag – Haremshosen"</div>
+        <div class="idea-fit">4.04 eng. The comfort + hero product pairing is PAIGH's sweet spot. Repeat with each new colourway drop. Let fabric movement do the selling.</div>
+        <div class="idea-footer">
+          <span class="tag tag-brand">Mara</span>
+          <span class="tag tag-data">Eng 4.04</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Reel — Sensory</span>
+          <span class="badge badge-scale">Scale</span>
+        </div>
+        <div class="idea-title">Stoffe, die dich umarmen</div>
+        <div class="idea-hook">"Manche Stoffe drücken. Diese umarmen."</div>
+        <div class="idea-fit">3.89 eng. Hand brushing fabric + sofa scene. Works because it gives the viewer a tactile feeling through the screen. Replicate with EcoVero, Muslin, Organic Cotton close-ups.</div>
+        <div class="idea-footer">
+          <span class="tag tag-brand">Mara</span>
+          <span class="tag tag-data">Eng 3.89</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Series — Illustrated</span>
+          <span class="badge badge-planned">Planned</span>
+        </div>
+        <div class="idea-title">Ghibli World — Series 1</div>
+        <div class="idea-hook">"A world that feels handmade — just like the clothes."</div>
+        <div class="idea-fit">ChatGPT-generated illustrated scenes. Warm countryside + flowing fabric. Posts as reel animation or static carousel (Pinterest gold). Opens a new creative register without AI-looking photorealism. Fit: Clara + Sofia.</div>
+        <div class="idea-footer">
+          <span class="tag tag-tech">AI Illustrated</span>
+          <span class="tag tag-content">Clara</span>
+          <span class="tag tag-content">Sofia</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Series — Mara / Travel</span>
+          <span class="badge badge-planned">Planned</span>
+        </div>
+        <div class="idea-title">Urlaub mit PAIGH</div>
+        <div class="idea-hook">"Sofa. Fahrrad. Strand. Eine Hose."</div>
+        <div class="idea-fit">Mara-led travel reel. One piece, multiple real situations in summer travel context. Executes the highest-potential Sprint idea. Targets saves (packing reference) + shares (summer Fernweh). Peaks Jun–Aug.</div>
+        <div class="idea-footer">
+          <span class="tag tag-tech">Mara</span>
+          <span class="tag tag-content">Mara Persona</span>
+          <span class="tag tag-content">Clara</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Reel — Body acceptance</span>
+          <span class="badge badge-test">Test</span>
+        </div>
+        <div class="idea-title">Nicht du musst passen</div>
+        <div class="idea-hook">"Nicht du musst passen. Die Kleidung passt sich an."</div>
+        <div class="idea-fit">Body-acceptance angle with different models, same piece. Targets Sofia directly. Expected: high saves + comments. Validates inclusivity claim without preaching. Run as Carousel + Reel pair.</div>
+        <div class="idea-footer">
+          <span class="tag tag-content">Sofia</span>
+          <span class="tag tag-content">Mara</span>
+          <span class="tag tag-data">KPI: Saves + Comments</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Reel — Maker story</span>
+          <span class="badge badge-test">Test</span>
+        </div>
+        <div class="idea-title">Hinter dieser Hose steht ein Mensch</div>
+        <div class="idea-hook">"Hinter dieser Hose steht ein Mensch."</div>
+        <div class="idea-fit">Maker hands at work → cut to the garment worn. Biggest differentiator currently underused. Lena's #1 content. Run this at least 1× per month. Currently earns 2.15–2.73 but has ceiling-busting share potential.</div>
+        <div class="idea-footer">
+          <span class="tag tag-content">Lena</span>
+          <span class="tag tag-content">Clara</span>
+          <span class="tag tag-data">KPI: Shares</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Quiz / Interactive</span>
+          <span class="badge badge-test">Test</span>
+        </div>
+        <div class="idea-title">Which PAIGH Print Are You?</div>
+        <div class="idea-hook">"Sunny = Golden Optimist · Salmon = Warm Romantic…"</div>
+        <div class="idea-fit">Quiz-format reel + Story poll chain. Sunny / Salmon / Lavender / Spring Green results. Built to earn comments + shares. Sofia's territory. Best deployed Friday evening into weekend Story follow-up.</div>
+        <div class="idea-footer">
+          <span class="tag tag-content">Sofia</span>
+          <span class="tag tag-data">KPI: Comments + Shares</span>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-status">
+          <span class="idea-type">Reel — POV format</span>
+          <span class="badge badge-live">Live</span>
+        </div>
+        <div class="idea-title">Deine Kleidung könnte sprechen</div>
+        <div class="idea-hook">"Ich weiß, heute war schwer. Dafür bin ich da."</div>
+        <div class="idea-fit">Proven POV winner — woman comes home, puts on PAIGH piece. Emotional afterwork unwind. Warm golden light, cream interior, slow camera. 18–22s. The formula in its purest form. Produce seasonal variants.</div>
+        <div class="idea-footer">
+          <span class="tag tag-content">Mara</span>
+          <span class="tag tag-content">Clara</span>
+          <span class="tag tag-data">Proven Format</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="wave-div" />
+
+  <!-- PRIORITIES -->
+  <section class="section" id="priorities">
+    <div class="section-label">Action Plan — Next 90 Days</div>
+    <h2 class="section-title">Where to put the energy.</h2>
+    <p class="section-sub">Six priorities ranked by impact. Derived from performance data, not assumptions.</p>
+
+    <div class="priorities-grid">
+      <div class="priority-card">
+        <div class="priority-num">1</div>
+        <div class="priority-body">
+          <div class="priority-title">Launch Ghibli Series</div>
+          <div class="priority-sub">Two to three illustrated posts using ChatGPT. Test as static carousel first → animate the best performer as a reel. Pinterest cross-post for organic discovery.</div>
+        </div>
+      </div>
+      <div class="priority-card">
+        <div class="priority-num">2</div>
+        <div class="priority-body">
+          <div class="priority-title">Produce Urlaub Reel with Mara</div>
+          <div class="priority-sub">Summer window is now (Jun–Aug). Kling/Higgsfield production: "Sofa. Fahrrad. Strand." Cut to 15–18s. ElevenLabs voiceover. Targets saves + Fernweh shares.</div>
+        </div>
+      </div>
+      <div class="priority-card">
+        <div class="priority-num">3</div>
+        <div class="priority-body">
+          <div class="priority-title">Fix the Resonance Gap</div>
+          <div class="priority-sub">Every post planned for the next 4 weeks must follow the feeling-first formula. No product-first hooks. No argument-first sustainability. If the first 1s doesn't deliver feeling, rewrite it.</div>
+        </div>
+      </div>
+      <div class="priority-card">
+        <div class="priority-num">4</div>
+        <div class="priority-body">
+          <div class="priority-title">Pin Every Reel Cover</div>
+          <div class="priority-sub">Pinterest earned 637 interactions from 1 post. Zero-effort repurpose: pin every Instagram reel cover + best carousel slides. This is the highest ROI-per-minute task available.</div>
+        </div>
+      </div>
+      <div class="priority-card">
+        <div class="priority-num">5</div>
+        <div class="priority-body">
+          <div class="priority-title">Stand Up TikTok Properly</div>
+          <div class="priority-sub">3 maker/comfort reels posted without Instagram watermark. TikTok SEO titles in German. Repurpose existing best performers first — "Endlich ist die Sonne wieder da" is already proven.</div>
+        </div>
+      </div>
+      <div class="priority-card">
+        <div class="priority-num">6</div>
+        <div class="priority-body">
+          <div class="priority-title">Reframe All Keywords</div>
+          <div class="priority-sub">"Nachhaltige Mode" → "…die sich leicht anfühlt." Test new keywords: Wohlfühlkleidung, Mode für jede Körperform, Kleidung die nicht drückt. Audit hashtag clusters monthly.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM SIGN-OFF -->
+    <div style="margin-top:48px;background:var(--jet);border-radius:var(--r2);padding:36px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap">
+      <div>
+        <div style="font-family:var(--font-display);font-size:26px;color:var(--cream);margin-bottom:6px">„Trag, was zählt."</div>
+        <div style="font-size:13px;color:rgba(248,246,241,0.45)">PAIGH by House of Sustainable Brands GmbH · Dashboard compiled Jun 2026</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--sunny);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Next milestone</div>
+        <div style="font-size:14px;font-weight:600;color:var(--cream)">Ghibli Series 1 + Urlaub Reel</div>
+        <div style="font-size:12px;color:rgba(248,246,241,0.45);margin-top:2px">Target: July 2026 · Summer peak window</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // Active nav pill on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const pills = document.querySelectorAll('.nav-pill');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        pills.forEach(p => p.classList.remove('active'));
+        const active = document.querySelector(`.nav-pill[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.35 });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
